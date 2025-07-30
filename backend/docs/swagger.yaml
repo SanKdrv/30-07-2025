@@ -1,0 +1,125 @@
+definitions:
+  internal_routes.GetStatusesResponse:
+    properties:
+      download_link:
+        type: string
+      task:
+        $ref: '#/definitions/internal_routes.Task'
+    type: object
+  internal_routes.Task:
+    properties:
+      errors:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/archives/{id}/download:
+    get:
+      description: Скачивает архив, связанный с задачей, по её ID
+      parameters:
+      - description: Task ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/zip
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Неверный ID задачи
+          schema:
+            type: string
+        "404":
+          description: Архив не найден
+          schema:
+            type: string
+        "500":
+          description: Ошибка открытия файла
+          schema:
+            type: string
+      summary: Скачать архив по ID задачи
+      tags:
+      - archives
+  /api/tasks/{id}/add-link:
+    post:
+      description: Добавляет ссылку к задаче по её ID
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Ссылка для добавления
+        in: formData
+        name: link
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Ссылка успешно добавлена к задаче
+          schema:
+            type: string
+        "400":
+          description: Неверный ID задачи или пустая ссылка
+          schema:
+            type: string
+        "500":
+          description: Ошибка при добавлении ссылки к задаче
+          schema:
+            type: string
+      summary: Добавить ссылку к задаче
+      tags:
+      - tasks
+  /api/tasks/{id}/status:
+    get:
+      description: |-
+        Возвращает статусы задачи по её ID. В случае, когда ни один файл не удалось скачать, архив не будет возвращён.
+        Если задача завершена успешно/удалось установить хоть один файл на момент завершения, возвращает ссылку на скачивание архива
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Статусы задачи успешно получены
+          schema:
+            $ref: '#/definitions/internal_routes.GetStatusesResponse'
+        "400":
+          description: Неверный ID задачи
+          schema:
+            type: string
+        "500":
+          description: Ошибка при получении или сериализации статусов задачи
+          schema:
+            type: string
+      summary: Получить статусы задачи
+      tags:
+      - tasks
+  /api/tasks/create:
+    post:
+      description: Создает новую задачу и возвращает её ID
+      responses:
+        "201":
+          description: 'Задача успешно создана с ID: {id}'
+          schema:
+            type: string
+        "500":
+          description: Ошибка при создании задачи
+          schema:
+            type: string
+      summary: Создать новую задачу
+      tags:
+      - tasks
+swagger: "2.0"
