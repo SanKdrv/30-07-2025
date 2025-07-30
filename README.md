@@ -37,6 +37,13 @@ git clone https://github.com/SanKdrv/2025-07-30
 cd 2025-07-30
 make start
 ```
+Если утилита make отсутствует, то:
+```bash
+git clone https://github.com/SanKdrv/2025-07-30
+cd 2025-07-30
+go run ./backend/app/main.go
+```
+ВАЖНО: должен быть установлен go (Желательно 1.24.5)
 ## Выключение
 При посылании SIGINT|SIGTERM в программу происходит gracefully shutdown, после которого удаляются папки, используемые для хранения статики.
 
